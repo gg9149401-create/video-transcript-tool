@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Transcript Tool</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+}
+
+.container {
+    max-width: 650px;
+    margin: auto;
+    padding: 25px 15px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.08);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.upload {
+    border: 2px dashed #999;
+    border-radius: 15px;
+    padding: 35px 15px;
+    text-align: center;
+}
+
+input[type="file"] {
+    width: 100%;
+    margin: 15px 0;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #222;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .5;
+}
+
+#status {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f1f1f1;
+    white-space: pre-wrap;
+}
+
+.download {
+    display: block;
+    margin-top: 15px;
+    padding: 13px;
+    text-align: center;
+    background: #16803c;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>🎙️ Video Transcript</h1>
+
+<div class="subtitle">
+Video ထဲက အသံကို စာသားအဖြစ် ထုတ်ယူပါ
+</div>
+
+<div class="upload">
+
+<p>🎥 Video ဖိုင်ရွေးပါ</p>
+
+<input
+    type="file"
+    id="videoFile"
+    accept="video/*"
+>
+
+<button
+    id="uploadBtn"
+    onclick="uploadVideo()"
+>
+Transcript ထုတ်မယ်
+</button>
+
+</div>
+
+<div id="status">
+Video ဖိုင်ရွေးပြီး "Transcript ထုတ်မယ်" ကိုနှိပ်ပါ။
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+async function uploadVideo() {
+
+    const fileInput = document.getElementById("videoFile");
+    const button = document.getElementById("uploadBtn");
+    const status = document.getElementById("status");
+
+    if (!fileInput.files.length) {
+        status.innerText = "❌ Video ဖိုင်အရင်ရွေးပါ။";
+        return;
+    }
+
+    const file = fileInput.files[0];
+
+    status.innerText =
+        "⏳ Video upload လုပ်နေပါတယ်...\n" +
+        "ဖိုင်အရွယ်အစား: " +
+        (file.size / 1024 / 1024).toFixed(1) +
+        " MB";
+
+    button.disabled = true;
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    try {
+
+        const response = await fetch("/transcribe", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Server error");
+        }
+
+        status.innerHTML =
+            "✅ Processing ပြီးပါပြီ။<br><br>" +
+            data.message +
+            '<br><br>' +
+            '<a class="download" href="' +
+            data.download +
+            '">📄 TXT Download</a>';
+
+    } catch (error) {
+
+        status.innerText =
+            "❌ Error ဖြစ်သွားပါတယ်။\n\n" +
+            error.message;
+
+    } finally {
+
+        button.disabled = false;
+
+    }
+}
+
+</script>
+
+</body>
+</html>
