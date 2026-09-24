@@ -18,73 +18,106 @@ body {
 }
 
 .container {
-    max-width: 650px;
-    margin: auto;
-    padding: 25px 15px;
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 20px;
 }
 
 .card {
     background: white;
-    padding: 25px;
-    border-radius: 18px;
-    box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    border-radius: 20px;
+    padding: 30px 25px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 8px;
+    font-size: 34px;
+    margin-bottom: 10px;
 }
 
 .subtitle {
     text-align: center;
     color: #666;
-    margin-bottom: 25px;
+    font-size: 18px;
+    margin-bottom: 30px;
 }
 
-.upload {
-    border: 2px dashed #999;
-    border-radius: 15px;
-    padding: 35px 15px;
+.upload-box {
+    border: 3px dashed #aaa;
+    border-radius: 18px;
+    padding: 30px 20px;
     text-align: center;
 }
 
 input[type="file"] {
     width: 100%;
-    margin: 15px 0;
+    margin: 20px 0;
+    font-size: 16px;
 }
 
 button {
     width: 100%;
-    padding: 14px;
-    border: 0;
-    border-radius: 10px;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
     background: #222;
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
 }
 
 button:disabled {
-    opacity: .5;
+    background: #999;
 }
 
 #status {
-    margin-top: 20px;
+    margin-top: 25px;
     padding: 15px;
-    border-radius: 10px;
+    border-radius: 12px;
     background: #f1f1f1;
-    white-space: pre-wrap;
+    text-align: center;
+    display: none;
+}
+
+#result {
+    margin-top: 20px;
+    display: none;
 }
 
 .download {
     display: block;
-    margin-top: 15px;
-    padding: 13px;
-    text-align: center;
-    background: #16803c;
-    color: white;
     text-decoration: none;
+    text-align: center;
+    padding: 14px;
+    margin-top: 12px;
     border-radius: 10px;
+    background: #222;
+    color: white;
+}
+
+.notice {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f1f1f1;
+    border-radius: 12px;
+    color: #555;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin: 10px auto;
+        padding: 10px;
+    }
+
+    .card {
+        padding: 25px 15px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
 }
 </style>
 </head>
@@ -98,30 +131,39 @@ button:disabled {
 <h1>🎙️ Video Transcript</h1>
 
 <div class="subtitle">
-Video ထဲက အသံကို စာသားအဖြစ် ထုတ်ယူပါ
+ဗီဒီယိုထဲက အသံကို စာသားအဖြစ် ပြောင်းပေးမယ်
 </div>
 
-<div class="upload">
+<div class="upload-box">
 
-<p>🎥 Video ဖိုင်ရွေးပါ</p>
+<div style="font-size:45px;">🎥</div>
 
-<input
-    type="file"
-    id="videoFile"
-    accept="video/*"
->
+<input type="file" id="videoFile" accept="video/*">
 
-<button
-    id="uploadBtn"
-    onclick="uploadVideo()"
->
+<button id="startBtn" onclick="startTranscription()">
 Transcript ထုတ်မယ်
 </button>
 
+<div id="status"></div>
+
+<div id="result">
+<h3>Transcript ပြီးပါပြီ ✅</h3>
+
+<a id="txtLink" class="download" target="_blank">
+📄 TXT Download
+</a>
+
+<a id="srtLink" class="download" target="_blank">
+🎬 SRT Download
+</a>
 </div>
 
-<div id="status">
-Video ဖိုင်ရွေးပြီး "Transcript ထုတ်မယ်" ကိုနှိပ်ပါ။
+</div>
+
+<div class="notice">
+ဗီဒီယိုကို ရွေးပြီး "Transcript ထုတ်မယ်" ကိုနှိပ်ပါ။
+<br><br>
+တရုတ်၊ မြန်မာ၊ Hindi၊ English စတဲ့ ဘာသာစကားများကို အသံအလိုက် သိရှိနိုင်ပါတယ်။
 </div>
 
 </div>
@@ -130,29 +172,26 @@ Video ဖိုင်ရွေးပြီး "Transcript ထုတ်မယ်"
 
 <script>
 
-async function uploadVideo() {
+async function startTranscription() {
 
     const fileInput = document.getElementById("videoFile");
-    const button = document.getElementById("uploadBtn");
+    const button = document.getElementById("startBtn");
     const status = document.getElementById("status");
+    const result = document.getElementById("result");
 
     if (!fileInput.files.length) {
-        status.innerText = "❌ Video ဖိုင်အရင်ရွေးပါ။";
+        alert("ဗီဒီယိုဖိုင်ကို အရင်ရွေးပါ။");
         return;
     }
 
     const file = fileInput.files[0];
 
-    status.innerText =
-        "⏳ Video upload လုပ်နေပါတယ်...\n" +
-        "ဖိုင်အရွယ်အစား: " +
-        (file.size / 1024 / 1024).toFixed(1) +
-        " MB";
-
     button.disabled = true;
+    result.style.display = "none";
+    status.style.display = "block";
+    status.innerText = "ဗီဒီယို Upload လုပ်နေပါတယ်...";
 
     const formData = new FormData();
-
     formData.append("file", file);
 
     try {
@@ -165,26 +204,93 @@ async function uploadVideo() {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.detail || "Server error");
+            throw new Error(data.detail || "Upload မအောင်မြင်ပါ။");
         }
 
-        status.innerHTML =
-            "✅ Processing ပြီးပါပြီ။<br><br>" +
-            data.message +
-            '<br><br>' +
-            '<a class="download" href="' +
-            data.download +
-            '">📄 TXT Download</a>';
+        if (!data.job_id) {
+            throw new Error("Job ID မရရှိပါ။");
+        }
+
+        const jobId = data.job_id;
+
+        checkStatus(jobId);
+
+    } catch (error) {
+
+        status.innerText = "❌ Error: " + error.message;
+        button.disabled = false;
+
+    }
+}
+
+
+async function checkStatus(jobId) {
+
+    const status = document.getElementById("status");
+    const button = document.getElementById("startBtn");
+    const result = document.getElementById("result");
+
+    try {
+
+        const response = await fetch("/status/" + jobId);
+
+        const data = await response.json();
+
+        if (data.status === "processing") {
+
+            status.innerText =
+                data.message || "Transcript ထုတ်နေပါတယ်...";
+
+            setTimeout(function() {
+                checkStatus(jobId);
+            }, 3000);
+
+        }
+
+        else if (data.status === "completed") {
+
+            status.innerText =
+                "✅ Transcript အောင်မြင်စွာ ထုတ်ပြီးပါပြီ။";
+
+            document.getElementById("txtLink").href =
+                data.txt_download;
+
+            document.getElementById("srtLink").href =
+                data.srt_download;
+
+            result.style.display = "block";
+
+            button.disabled = false;
+
+        }
+
+        else if (data.status === "error") {
+
+            status.innerText =
+                "❌ " + (data.message || "Transcript မထုတ်နိုင်ပါ။");
+
+            button.disabled = false;
+
+        }
+
+        else {
+
+            status.innerText = "လုပ်ဆောင်နေပါတယ်...";
+
+            setTimeout(function() {
+                checkStatus(jobId);
+            }, 3000);
+
+        }
 
     } catch (error) {
 
         status.innerText =
-            "❌ Error ဖြစ်သွားပါတယ်။\n\n" +
-            error.message;
+            "Server ကို ဆက်သွယ်နေပါတယ်...";
 
-    } finally {
-
-        button.disabled = false;
+        setTimeout(function() {
+            checkStatus(jobId);
+        }, 5000);
 
     }
 }
