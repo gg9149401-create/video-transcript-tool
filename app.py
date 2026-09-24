@@ -114,7 +114,7 @@ def process_video(job_id, video_path):
             "-ar",
             "16000",
             "-b:a",
-            "64k",
+            "128k",
             "-f",
             "segment",
             "-segment_time",
