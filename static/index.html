@@ -253,10 +253,10 @@ async function checkStatus(jobId) {
                 "✅ Transcript အောင်မြင်စွာ ထုတ်ပြီးပါပြီ။";
 
             document.getElementById("txtLink").href =
-                data.txt_download;
+                data.txt;
 
             document.getElementById("srtLink").href =
-                data.srt_download;
+                data.srt;
 
             result.style.display = "block";
 
@@ -267,7 +267,7 @@ async function checkStatus(jobId) {
         else if (data.status === "error") {
 
             status.innerText =
-                "❌ " + (data.message || "Transcript မထုတ်နိုင်ပါ။");
+                "❌ " + (data.error || data.message || "Transcript မထုတ်နိုင်ပါ။");
 
             button.disabled = false;
 
