@@ -67,9 +67,10 @@ def transcribe_audio(audio_file, offset):
             },
             files={
                 "file": (
-                    audio_file.name,
-                    f,
-                    "audio/mpeg"
+    "audio.mp3",
+    f,
+    "audio/mpeg"
+)
                 )
             },
             data={
