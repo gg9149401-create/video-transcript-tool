@@ -74,7 +74,7 @@ def transcribe_audio(audio_file, offset):
                 )
             },
             data={
-                "model": "whisper-large-v3-turbo",
+                "model": "whisper-large-v3",
                 "response_format": "verbose_json",
                 "temperature": "0"
             },
