@@ -1,6 +1,7 @@
 import os
 import uuid
 import shutil
+import traceback
 import subprocess
 from pathlib import Path
 from threading import Thread
