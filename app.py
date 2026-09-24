@@ -197,14 +197,12 @@ def process_video(job_id, video_path):
             "txt": f"/download/{txt_name}",
             "srt": f"/download/{srt_name}"
         }
-
-    except Exception as e:
-
-        JOBS[job_id] = {
-            "status": "error",
-            "error": str(e)
-        }
-
+ except Exception as e:
+    traceback.print_exc()
+    JOBS[job_id] = {
+        "status": "error",
+        "error": str(e)
+    }
     finally:
         try:
             shutil.rmtree(TEMP / job_id)
